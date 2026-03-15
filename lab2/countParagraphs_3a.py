@@ -14,8 +14,6 @@ def countParagraphs():
     while True:
         char = sys.stdin.read(1)
         if not char:
-            if line.strip() != "" or hasContent:
-                count += 1
             break
 
         if char != '\n':

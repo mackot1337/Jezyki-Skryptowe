@@ -60,7 +60,7 @@ def calculateProperNouns():
             hasProperNoun = False
             hasContent = False
 
-    return (properNounSentences/totalSentences) * 100 if totalSentences > 0 else 0
+    return (properNounSentences/totalSentences) * 100
 
 if __name__ == "__main__":
     try:
