@@ -31,12 +31,15 @@ def read_sentences(process_func, print_func):
                 newline_count = 0
 
             if char in ".?!" or newline_count >= 2:
+                is_paragraph = (newline_count >= 2)
                 cleaned = sentence.strip()
                 if cleaned:
                     res = process_func(cleaned)
                     if res:
                         print_func(res)
                         found = True
+                if is_paragraph and res:
+                    sys.stdout.write("\n")
                 sentence = ""
                 newline_count = 0
         
