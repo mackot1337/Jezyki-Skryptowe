@@ -1,13 +1,11 @@
 import sys
-import io
+from utils import setEncoding
 
 def longestSentence():
-    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-
+    setEncoding()
+    
     longest = ""
     current = ""
-    lastChar = ""
     newLineCount = 0
 
     while True:

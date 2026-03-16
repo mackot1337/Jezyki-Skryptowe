@@ -1,10 +1,9 @@
 import sys
 import io
-from validNeighbours_3e_pom import validNeighbours
+from utils import validNeighbours, setEncoding
 
 def specialLongestSentence():
-    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    setEncoding()
 
     longest = ""
     current = ""

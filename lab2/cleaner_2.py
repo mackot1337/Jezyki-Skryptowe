@@ -1,5 +1,5 @@
 import sys
-import io
+from utils import setEncoding
 
 def cleanLineSpaces(line):
     line = line.strip()
@@ -14,8 +14,7 @@ def cleanLineSpaces(line):
     return result
 
 def main():
-    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    setEncoding()
 
     line = ""
     preamble = ""
@@ -29,12 +28,11 @@ def main():
 
         if not char:
             if line:
+                cleanedLine = cleanLineSpaces(line)
                 if inPreamble:
-                    cleanedLine = cleanLineSpaces(line)
                     preamble += cleanedLine + "\n"
                     sys.stdout.write(preamble + "\n")
                 else:
-                    cleanedLine = cleanLineSpaces(line)
                     sys.stdout.write(cleanedLine + "\n")
             break
 

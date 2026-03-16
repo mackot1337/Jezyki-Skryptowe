@@ -1,9 +1,8 @@
 import sys
-import io
+from utils import setEncoding
 
 def calculateProperNouns():
-    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    setEncoding()
 
     totalSentences = 0
     properNounSentences = 0
@@ -65,6 +64,6 @@ def calculateProperNouns():
 if __name__ == "__main__":
     try:
         result = calculateProperNouns()
-        sys.stdout.write(f"{result:.2f}\n")
+        sys.stdout.write(str(result) + "\n")
     except Exception as e:
         sys.stderr.write(str(e) + "\n")

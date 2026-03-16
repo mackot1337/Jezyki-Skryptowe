@@ -24,7 +24,6 @@ def process_3j(sentence):
                     target_count += 1
                 current_word = ""
                 
-    # Sprawdzenie ostatniego wyrazu (jeśli zdanie nie kończy się znakiem interpunkcyjnym)
     if current_word != "":
         if is_target_word(current_word):
             target_count += 1
@@ -36,7 +35,6 @@ def process_3j(sentence):
 if __name__ == '__main__':
     try:
         count = read_sentences(process_3j, print_output)
-        
         if not count:
             sys.stderr.write("Informacja: Brak treści odpowiadającej filtrowi lub plik jest pusty.\n")
     except Exception as e:

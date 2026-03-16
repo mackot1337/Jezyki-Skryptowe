@@ -21,7 +21,6 @@ def process_3g(sentence):
 if __name__ == '__main__':
     try:
         count = read_sentences(process_3g, print_output)
-        
         if not count:
             sys.stderr.write("Informacja: Brak treści odpowiadającej filtrowi lub plik jest pusty.\n")
     except Exception as e:
