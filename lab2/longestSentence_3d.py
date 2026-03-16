@@ -1,5 +1,5 @@
 import sys
-from utils import setEncoding
+from utils import result, setEncoding
 
 def longestSentence():
     setEncoding()
@@ -35,9 +35,5 @@ def longestSentence():
                 current = ""
     return longest
 
-if __name__ == "__main__":
-    try:
-        result = longestSentence()
-        sys.stdout.write(result + "\n")
-    except Exception as e:
-        sys.stderr.write(str(e) + "\n")
+if __name__ == '__main__':
+    result(longestSentence)

@@ -1,5 +1,5 @@
 import sys
-from utils import setEncoding
+from utils import print_output_newline, setEncoding
 
 def cleanLineSpaces(line):
     line = line.strip()
@@ -31,9 +31,9 @@ def main():
                 cleanedLine = cleanLineSpaces(line)
                 if inPreamble:
                     preamble += cleanedLine + "\n"
-                    sys.stdout.write(preamble + "\n")
+                    print_output_newline(preamble)
                 else:
-                    sys.stdout.write(cleanedLine + "\n")
+                    print_output_newline(cleanedLine)
             break
 
         if char != "\n":
@@ -58,11 +58,11 @@ def main():
                     preamble = ""
                 elif lineCounter >= 10:
                     inPreamble = False
-                    sys.stdout.write(preamble)
+                    print_output_newline(preamble)
                     preamble = ""
             else:
                 cleanedLine = cleanLineSpaces(line)
-                sys.stdout.write(cleanedLine + "\n")
+                print_output_newline(cleanedLine)
 
             line = ""
 

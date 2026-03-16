@@ -1,5 +1,5 @@
 import sys
-from utils import setEncoding
+from utils import result, setEncoding
 
 def countNoWhiteChars():
     setEncoding()
@@ -16,9 +16,5 @@ def countNoWhiteChars():
 
     return count
 
-if __name__ == "__main__":
-    try:
-        result = countNoWhiteChars()
-        sys.stdout.write(str(result) + "\n")
-    except Exception as e:
-        sys.stderr.write(str(e) + "\n")
+if __name__ == '__main__':
+    result(countNoWhiteChars)

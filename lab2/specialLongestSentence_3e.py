@@ -1,6 +1,5 @@
 import sys
-import io
-from utils import validNeighbours, setEncoding
+from utils import result, validNeighbours, setEncoding
 
 def specialLongestSentence():
     setEncoding()
@@ -39,9 +38,5 @@ def specialLongestSentence():
 
     return longest
     
-if __name__ == "__main__":
-    try:
-        result = specialLongestSentence()
-        sys.stdout.write(result + "\n")
-    except Exception as e:
-        sys.stderr.write(str(e) + "\n")
+if __name__ == '__main__':
+    result(specialLongestSentence)

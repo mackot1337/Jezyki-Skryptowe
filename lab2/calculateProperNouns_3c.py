@@ -1,5 +1,5 @@
 import sys
-from utils import setEncoding
+from utils import result, setEncoding
 
 def calculateProperNouns():
     setEncoding()
@@ -61,9 +61,5 @@ def calculateProperNouns():
 
     return (properNounSentences/totalSentences) * 100
 
-if __name__ == "__main__":
-    try:
-        result = calculateProperNouns()
-        sys.stdout.write(str(result) + "\n")
-    except Exception as e:
-        sys.stderr.write(str(e) + "\n")
+if __name__ == '__main__':
+    result(calculateProperNouns)
