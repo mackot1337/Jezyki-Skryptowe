@@ -1,0 +1,20 @@
+type books\calineczka.txt
+
+type books\calineczka.txt | py cleaner_2.py
+
+type books\calineczka.txt | py countParagraphs_3a.py
+type books\calineczka.txt | py countNonWhiteChars_3b.py
+type books\calineczka.txt | py calculateProperNouns_3c.py
+
+type books\calineczka.txt | py longestSentence_3d.py
+type books\calineczka.txt | py specialLongestSentence_3e.py
+type books\calineczka.txt | py findComplexSentence_3f.py
+
+type books\calineczka.txt | py sentencesWithMax4Words_3g.py
+type books\calineczka.txt | py questionsAndExclamations_3h.py
+type books\calineczka.txt | py first20Sentences_3i.py
+type books\calineczka.txt | py sentencesWithSpecificWords_3j.py
+
+
+
+type books\calineczka.txt | py first20Sentences_3i.py | py countParagraphs_3a.py

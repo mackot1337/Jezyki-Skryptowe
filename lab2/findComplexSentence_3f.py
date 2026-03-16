@@ -1,6 +1,5 @@
 import sys
-import io
-from utils import setEncoding
+from utils import result, setEncoding
 
 def findFirstComplexSentence():
     setEncoding()
@@ -23,12 +22,5 @@ def findFirstComplexSentence():
 
     return ""
 
-if __name__ == "__main__":
-    try:
-        result = findFirstComplexSentence()
-        if result:
-            sys.stdout.write(result + "\n")
-        else:
-            sys.stdout.write("No complex sentence found.\n")
-    except Exception as e:
-        sys.stderr.write(f"Wystąpił błąd: {e}\n")
+if __name__ == '__main__':
+    result(findFirstComplexSentence)

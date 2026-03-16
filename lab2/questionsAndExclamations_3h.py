@@ -1,7 +1,7 @@
-from common import read_sentences, print_output
-import sys
+from filter_utils import filter_result
+from utils import print_output_newline
 
-def process_3h(sentence):
+def filter_questions_and_exclamations(sentence):
     last_char = ""
     for c in sentence:
         if c not in " \t\n\r":
@@ -11,9 +11,4 @@ def process_3h(sentence):
     return ""
 
 if __name__ == '__main__':
-    try:
-        count = read_sentences(process_3h, print_output)
-        if not count:
-            sys.stderr.write("Informacja: Brak treści odpowiadającej filtrowi lub plik jest pusty.\n")
-    except Exception as e:
-        sys.stderr.write("Blad: " + str(e) + "\n")
+    filter_result(filter_questions_and_exclamations, print_output_newline)

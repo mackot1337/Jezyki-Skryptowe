@@ -1,12 +1,9 @@
-import io
 import sys
 
-def print_output(text):
-    sys.stdout.write(text + "\n")
+from utils import setEncoding
 
-def read_sentences(process_func, print_func):
-    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+def read_sentences(filter_func, print_func):
+    setEncoding()
 
     sentence = ""
     newline_count = 0
@@ -18,7 +15,7 @@ def read_sentences(process_func, print_func):
             if not char:
                 cleaned = sentence.strip()
                 if cleaned:
-                    res = process_func(cleaned)
+                    res = filter_func(cleaned)
                     if res:
                         print_func(res)
                         found = True
@@ -34,12 +31,12 @@ def read_sentences(process_func, print_func):
                 is_paragraph = (newline_count >= 2)
                 cleaned = sentence.strip()
                 if cleaned:
-                    res = process_func(cleaned)
+                    res = filter_func(cleaned)
                     if res:
                         print_func(res)
                         found = True
                 if is_paragraph and res:
-                    sys.stdout.write("\n")
+                    print_func("")
                 sentence = ""
                 newline_count = 0
         
@@ -48,3 +45,11 @@ def read_sentences(process_func, print_func):
     except Exception as e:
         sys.stderr.write("Blad: " + str(e) + "\n")
         return 0
+    
+def filter_result(filter_func, print_func):
+    try:
+        count = read_sentences(filter_func, print_func)
+        if not count:
+            sys.stderr.write("Informacja: Brak treści odpowiadającej filtrowi lub plik jest pusty.\n")
+    except Exception as e:
+        sys.stderr.write("Blad: " + str(e) + "\n")

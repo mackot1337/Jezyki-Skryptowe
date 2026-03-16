@@ -1,5 +1,5 @@
 import sys
-from utils import setEncoding
+from utils import result, setEncoding
 
 def countParagraphs():
     setEncoding()
@@ -31,9 +31,5 @@ def countParagraphs():
 
     return count
 
-if __name__ == "__main__":
-    try:
-        result = countParagraphs()
-        sys.stdout.write(str(result) + "\n")
-    except Exception as e:
-        sys.stderr.write(str(e) + "\n")
+if __name__ == '__main__':
+    result(countParagraphs)

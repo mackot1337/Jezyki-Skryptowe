@@ -1,10 +1,9 @@
-import sys
-
-from common import read_sentences, print_output
+from filter_utils import filter_result
+from utils import print_output_newline
 
 sentence_counter = 0
 
-def process_3i(sentence):
+def filter_first_20_sentences(sentence):
     global sentence_counter
     if sentence_counter < 20:
         sentence_counter += 1
@@ -12,9 +11,4 @@ def process_3i(sentence):
     return ""
 
 if __name__ == '__main__':
-    try:
-        count = read_sentences(process_3i, print_output)
-        if not count:
-            sys.stderr.write("Informacja: Brak treści odpowiadającej filtrowi lub plik jest pusty.\n")
-    except Exception as e:
-        sys.stderr.write("Blad: " + str(e) + "\n")
+    filter_result(filter_first_20_sentences, print_output_newline)
