@@ -1,0 +1,19 @@
+Przykład linijki tekstu:
+
+1609459200.000000	C12345	192.168.1.10	54321	10.0.0.1	80	1	GET	example.com	/index.html	-	200	OK	-	0
+
+TO wszystko co nas interesuje                                       ^                               ^        ^  ^   ^
+                                                                    |                               |        |  |   |
+                                                                Nie ma znaczenia                        Nie ma znaczenia
+1. time stamp
+2. uid unikalny
+3. idOrigH adres ip hosta
+4. idOrigP port źródłowy
+5. idRespH adres ip serwera
+6. idRespP port docelowy
+7. metod
+8. host domena
+9. uri ścieżka
+10. status code 
+
+Nie ma znaczenia - losowe atrybuty logów http które nas nie obchodzą. Obchodzi nas tylko to co w zad0 + statusCode (tak mi się wydaje)
