@@ -2,9 +2,11 @@ def sortLog(log, index):
     try:
         return sorted(log, key=lambda x: x[index])
     except IndexError:
+        # co z ujemnymi indeksami?
         print(f"Error: index {index} out of range")
         return []
     except TypeError:
+        # to dziala dla log i index wiec moze jakis if ktory sprawdza co bylo zle?
         print("Error: log is not a list")
         return []
     

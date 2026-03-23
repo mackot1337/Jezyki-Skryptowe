@@ -1,6 +1,14 @@
 Przykład linijki tekstu:
 
-1609459200.000000	C12345	192.168.1.10	54321	10.0.0.1	80	1	GET	example.com	/index.html	-	200	OK	-	0
+
+
+
+1331901000.000000	CHEt7z3AzG4gyCNgci	192.168.202.79	50465	    192.168.229.251	    80	        1	        HEAD	192.168.229.251	    /DEASLog02.nsf	    -	Mozilla/5.0     (compatible; Nmap Scripting Engine; http://nmap.org/book/nse.html)	0	0	404	        Not Found	-	-	-	(empty)	-	-	-	-	-	-	-
+1609459200.000000	C12345	            192.168.1.10	54321	    10.0.0.1	        80	        1	        GET	    example.com	        /index.html	        -	                                                                                            200	        OK
+ts                  uid                 id.orig_h       id.orig_p   id.resp_h           id.resp_p   trans_depth method  host                uri                                                                                                                 status_code
+
+
+
 
 TO wszystko co nas interesuje                                       ^                               ^        ^  ^   ^
                                                                     |                               |        |  |   |
