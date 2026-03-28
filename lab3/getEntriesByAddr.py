@@ -19,7 +19,7 @@ def getEntriesByAddr(log, addr):
             return []
         
         for partion in partions:
-            if int(partion) < 0 or int(partion) > 255 or not partion.isdigit():
+            if not partion.isdigit() or int(partion) < 0 or int(partion) > 255:
                 print("Error: addr is not a valid IP address")
                 return []
             

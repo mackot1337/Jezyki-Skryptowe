@@ -10,7 +10,7 @@ def readLog(stream):
             continue
 
         fields = line.split("\t")
-        if len(fields) <= 11:
+        if len(fields) <= 15:
             continue
 
         try:
@@ -27,7 +27,7 @@ def readLog(stream):
             host = fields[8]
             uri = fields[9]
 
-            statusCode = int(fields[11]) if fields[11].isdigit() else None
+            statusCode = int(fields[14]) if fields[14].isdigit() else None
 
             tup = (ts, uid, idOrigH, idOrigP, idRespH, idRespP, method, host, uri, statusCode)
 
@@ -41,7 +41,6 @@ def test():
     print("Testy funkcji readLog\n")
     
     print("Test 1: Poprawne dane")
-    # valid_record = ["1680133200\tU123\t192.168.1.1\t1234\t10.0.0.1\t80\t-\tGET\texample.com\t/index.html\t-\t200\n"]
     valid_record = ["1331901000.000000	CHEt7z3AzG4gyCNgci	192.168.202.79	50465	192.168.229.251	80	1	HEAD	192.168.229.251	/DEASLog02.nsf	-	Mozilla/5.0 (compatible; Nmap Scripting Engine; http://nmap.org/book/nse.html)	0	0	404	Not Found	-	-	-	(empty)	-	-	-	-	-	-	-\n"]
     res1 = readLog(valid_record)
     print("Wynik:", len(res1), "rekordów")
