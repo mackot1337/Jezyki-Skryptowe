@@ -1,5 +1,6 @@
 import os
 import csv
+import sys
 from utils import getConvertedDir, saveToHistory
 from mediaConvert import getProgram
 
@@ -48,9 +49,56 @@ def testSaveHistory():
     
     print("Test 3 (zapis historii CSV i sprzątanie) zaliczony!")
 
+
+def testConversion():
+    testInputDir = "testowy_katalog_wejsciowy"
+    testOutputDir = "testowy_katalog_wyjsciowy"
+    os.makedirs(testInputDir, exist_ok=True)
+    
+    tinyGifBytes = b'GIF89a\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff\x00\x00\x00!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
+    fakeFile = os.path.join(testInputDir, "malyTest.gif")
+    with open(fakeFile, 'wb') as f:
+        f.write(tinyGifBytes)
+        
+    os.environ["CONVERTED_DIR"] = testOutputDir
+    
+    oldArgv = sys.argv
+    sys.argv = ["mediaConvert.py", testInputDir, "png"]
+    
+    try:
+        from mediaConvert import main
+        main()
+    except Exception as e:
+        assert False, f"Błąd! Szczegóły: {e}"
+        
+    converted = os.listdir(testOutputDir)
+    plikPng = [plik for plik in converted if plik.endswith(".png")]
+    
+    assert len(plikPng) > 0, "Błąd: Plik wyjściowy PNG nie został utworzony przez ImageMagick!"
+    
+    historyFile = os.path.join(testOutputDir, "history.csv")
+    assert os.path.exists(historyFile), "Błąd: Plik historii nie powstał."
+    
+    with open(historyFile, 'r', encoding='utf-8') as f:
+        reader = list(csv.reader(f))
+        assert len(reader) >= 2, "Błąd: Brak wpisu w historii po konwersji"
+        assert reader[1][4] == "magick", "Błąd: Skrypt nie zanotował użycia programu magick"
+    
+    sys.argv = oldArgv
+    os.remove(fakeFile)
+    os.rmdir(testInputDir)
+    
+    for f in os.listdir(testOutputDir):
+        os.remove(os.path.join(testOutputDir, f))
+    os.rmdir(testOutputDir)
+    del os.environ["CONVERTED_DIR"]
+        
+    print("Test 4 zaliczony!")
+
 if __name__ == "__main__":
-    print("Uruchamiam testy (wersja manualna)...\n" + "-"*40)
+    print("Uruchamiam testy...\n" + "-"*40)
     testGetProgram()
     testEnvVariable()
     testSaveHistory()
+    testConversion()
     print("-" * 40 + "\nWszystkie testy zakończone sukcesem!")

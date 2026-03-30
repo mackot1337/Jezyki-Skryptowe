@@ -9,7 +9,7 @@ def analyzeFile(path):
         with open(path, 'r', encoding='utf-8') as f:
             text = f.read()
     except Exception as e:
-        return {"Blad": str(e)}
+        return {"error": str(e)}
     
     if not text:
         return {"path": path, "chars": 0, "words": 0, "lines": 0, "freqChar": "", "freqWord": ""}

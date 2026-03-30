@@ -6,7 +6,7 @@ from collections import Counter
 
 def main():
     if len(sys.argv) < 2:
-        print("Użycie: python runner.py <ścieżka_do_katalogu>")
+        print("Użycie: python runner.py <ścieżkaDoKatalogu>")
         sys.exit(1)
     
     directory = sys.argv[1]
@@ -29,13 +29,9 @@ def main():
             capture_output=True
         )
 
-        if process.returncode == 0 and process.stdout.strip():
-            try:
-                data = json.loads(process.stdout)
-                if "error" not in data:
-                    results.append(data)
-            except json.JSONDecodeError:
-                print(f"Błąd dekodowania JSON z pliku: {path}")
+        data = json.loads(process.stdout)
+        if "error" not in data:
+            results.append(data)
 
     totalFiles = len(results)
     if totalFiles == 0:

@@ -16,7 +16,7 @@ def saveToHistory(originalPath, outputFormat, outputPath, programUsed):
 
     fileExists = os.path.isfile(historyFile)
 
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
     with open(historyFile, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
