@@ -58,10 +58,6 @@ def main():
                         continue
                     print(line, end="")
     else:
-        # Przetwarzanie wejścia standardowego, gdy brak pliku w argumentach
-        # sys.stdin.isatty() sprawdza, czy wejście to interaktywny terminal (klawiatura).
-        # Jeśli tak (True), a nie podano pliku w argumentach ani w potoku (pipe), 
-        # program wyrzuca błąd, aby uniknąć nieskończonego zawieszenia i czekania na wpis.
         if sys.stdin.isatty():
             print("Błąd: Brak pliku oraz danych na wejściu standardowym.")
             print("Użycie: python tail.py [--lines=N] [--follow] [ścieżka_do_pliku]")
