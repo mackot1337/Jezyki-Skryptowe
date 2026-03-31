@@ -2,7 +2,9 @@ import os
 import csv
 import sys
 from utils import getConvertedDir, saveToHistory
-from mediaConvert import getProgram
+from mediaConvert import getProgram, main
+
+import shutil
 
 def testGetProgram():
     assert getProgram("film.mp4") == "ffmpeg", "Błąd: .mp4 powinno być dla ffmpeg"
@@ -11,7 +13,7 @@ def testGetProgram():
     
     assert getProgram("plik_bez_kropki") is None, "Błąd: brak rozszerzenia powinien zwrócić None"
     
-    print("Test 1 (rozpoznawanie programów i wartości skrajne) zaliczony!")
+    print("Test 1 zaliczony!")
 
 def testEnvVariable():
     testDirName = "testowy_katalog_abc123"
@@ -25,7 +27,7 @@ def testEnvVariable():
     os.rmdir(katalog)
     del os.environ["CONVERTED_DIR"]
     
-    print("Test 2 (zmienne środowiskowe) zaliczony!")
+    print("Test 2 zaliczony!")
 
 def testSaveHistory():
     testDirName = "testowy_katalog_historia"
@@ -47,18 +49,20 @@ def testSaveHistory():
     os.rmdir(testDirName)
     del os.environ["CONVERTED_DIR"]
     
-    print("Test 3 (zapis historii CSV i sprzątanie) zaliczony!")
+    print("Test 3 zaliczony!")
 
 
 def testConversion():
     testInputDir = "testowy_katalog_wejsciowy"
     testOutputDir = "testowy_katalog_wyjsciowy"
     os.makedirs(testInputDir, exist_ok=True)
+
+    path = r"./gatsby.gif"
     
-    tinyGifBytes = b'GIF89a\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff\x00\x00\x00!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
-    fakeFile = os.path.join(testInputDir, "malyTest.gif")
-    with open(fakeFile, 'wb') as f:
-        f.write(tinyGifBytes)
+    name = "gatsby.gif"
+    targetFile = os.path.join(testInputDir, name)
+    
+    shutil.copy(path, targetFile)
         
     os.environ["CONVERTED_DIR"] = testOutputDir
     
@@ -66,7 +70,6 @@ def testConversion():
     sys.argv = ["mediaConvert.py", testInputDir, "png"]
     
     try:
-        from mediaConvert import main
         main()
     except Exception as e:
         assert False, f"Błąd! Szczegóły: {e}"
@@ -85,7 +88,7 @@ def testConversion():
         assert reader[1][4] == "magick", "Błąd: Skrypt nie zanotował użycia programu magick"
     
     sys.argv = oldArgv
-    os.remove(fakeFile)
+    os.remove(targetFile)
     os.rmdir(testInputDir)
     
     for f in os.listdir(testOutputDir):
