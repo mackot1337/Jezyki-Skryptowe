@@ -18,7 +18,7 @@ def getProgram(path):
 
 def main():
     if len(sys.argv) < 3:
-        print("Użycie: python mediaconvert.py <katalog_wejsciowy> <format_wyjsciowy>")
+        print("Użycie: python mediaconvert.py <katalogWejsciowy> <formatWyjsciowy>")
         sys.exit(1)
 
     inputDir = sys.argv[1]

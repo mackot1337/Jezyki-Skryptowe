@@ -1,0 +1,5 @@
+ustawianie własnych zmiennych w CMD: 
+set ZMIENNA=zmienna
+
+ustawianie własnych zmiennych w PowerShell: 
+$env:ZMIENNA="zmienna"

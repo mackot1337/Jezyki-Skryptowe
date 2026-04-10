@@ -13,7 +13,7 @@ def testAnalyzeNormalFile():
     assert result['freqWord'] == "kot", "Błąd szukania najczęstszego słowa"
     
     os.remove(testFile)
-    print("Test 1 (normalny plik) zaliczony!")
+    print("Test 1 zaliczony!")
 
 def testAnalyzeEmptyFile():
     testFile = "test_empty.txt"
@@ -26,7 +26,7 @@ def testAnalyzeEmptyFile():
     assert result['freqWord'] == "", "Brak słów powinien zwrócić pusty string"
     
     os.remove(testFile)
-    print("Test 2 (pusty plik - wartość skrajna) zaliczony!")
+    print("Test 2 zaliczony!")
 
 if __name__ == "__main__":
     print("Uruchamiam testy dla Zadania 4...\n" + "-"*40)
