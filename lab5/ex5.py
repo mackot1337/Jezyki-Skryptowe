@@ -3,7 +3,35 @@ import csv
 import os
 import random
 import statistics
+import sys
+import logging
 from datetime import datetime
+
+class StdOutFilter(logging.Filter):
+    def filter(self, record):
+        return record.levelno <= logging.WARNING
+
+def setup_logging():
+    logger = logging.getLogger('zad5')
+    logger.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter('%(levelname)s: %(message)s')
+
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setLevel(logging.DEBUG)
+    stdout_handler.setFormatter(formatter)
+    stdout_handler.addFilter(StdOutFilter())
+
+    stderr_handler = logging.StreamHandler(sys.stderr)
+    stderr_handler.setLevel(logging.ERROR)
+    stderr_handler.setFormatter(formatter)
+
+    logger.addHandler(stdout_handler)
+    logger.addHandler(stderr_handler)
+
+    return logger
+
+logger = setup_logging()
 
 from parseCsvFile import parseCsvFile
 from groupMeasurementFilesByKey import groupMeasurementFilesByKey
@@ -27,7 +55,8 @@ def valid_measurement(s):
             valid_qs.add(q)
             
         if valid_qs and s not in valid_qs:
-            raise argparse.ArgumentTypeError(f"Nieprawidłowa wielkość: '{s}'. Dostępne: {', '.join(sorted(valid_qs))}")
+            msg = f"Użytkownik podał mierzoną wielkość '{s}', która nie występuje na żadnej stacji."
+            raise argparse.ArgumentTypeError(msg)
         return s
     except (NotADirectoryError, FileNotFoundError):
         return s
@@ -45,7 +74,7 @@ def get_file_path(quantity, freq):
     
     if key not in files_dict:
         available = [k[1] for k in files_dict.keys() if k[0] == '2023' and k[2] == freq]
-        msg = f"Nieprawidłowa wielkość '{quantity}' lub częstotliwość '{freq}'."
+        msg = f"Brak dostępnych pomiarów dla zadanych parametrów. Wielkość '{quantity}' lub częstotliwość '{freq}' jest nieprawidłowa."
         if available:
             msg += f" Dostępne wielkości z tą częstotliwością to: {', '.join(sorted(set(available)))}"
         raise argparse.ArgumentTypeError(msg)
@@ -99,13 +128,18 @@ def extract_measurements(csv_path, start_date, end_date):
     return station_codes, data_per_station
 
 def cmd_random_station(args):
-    csv_path = get_file_path(args.quantity, args.freq)
+    try:
+        csv_path = get_file_path(args.quantity, args.freq)
+    except argparse.ArgumentTypeError as e:
+        logger.warning(f"Błąd argumentu: {e}")
+        return
+        
     station_codes, data_per_station = extract_measurements(csv_path, args.start, args.end)
     
     valid_codes = [code for code, vals in data_per_station.items() if vals]
     
     if not valid_codes:
-        print("Nie znaleziono żadnej stacji mierzacej podaną wielkość w zadanym czasie.")
+        logger.warning("Brak dostępnych pomiarów dla zadanych parametrów (filtr zwrócił pustą listę).")
         return
         
     random_code = random.choice(valid_codes)
@@ -120,19 +154,24 @@ def cmd_random_station(args):
         print(f"Adres: {city}, {adres}")
         print(f"Kod stacji: {random_code}")
     else:
-        print(f"Znaleziono stacje, ale nie ma jej w pliku stacje.csv (Kod: {random_code})")
+        logger.warning(f"Znaleziono stacje, ale nie ma jej w pliku stacje.csv (Kod: {random_code})")
 
 def cmd_stats(args):
-    csv_path = get_file_path(args.quantity, args.freq)
+    try:
+        csv_path = get_file_path(args.quantity, args.freq)
+    except argparse.ArgumentTypeError as e:
+        logger.warning(f"Błąd argumentu: {e}")
+        return
+        
     station_codes, data_per_station = extract_measurements(csv_path, args.start, args.end)
     
     if args.station not in data_per_station:
-        print(f"Stacja o kodzie '{args.station}' nie mierzy tej wielkości lub kod jest nieprawidłowy.")
+        logger.warning(f"Częstotliwość lub wielkość nie jest wspierana przez daną stację. (Stacja '{args.station}' nie mierzy tej wielkości).")
         return
         
     vals = data_per_station[args.station]
     if not vals:
-        print(f"Brak poprawnych pomiarów dla stacji '{args.station}' w podanym przedziale czasowym.")
+        logger.warning(f"Brak poprawnych pomiarów dla zadanych parametrów (stacja '{args.station}' w podanym przedziale czasowym).")
         return
         
     mean = statistics.mean(vals)
@@ -181,14 +220,14 @@ def main():
     args = parser.parse_args()
     
     if args.start > args.end:
-        print("Błąd: Data początkowa nie może być późniejsza niż data końcowa.")
+        logger.error("Błąd krytyczny: Data początkowa nie może być późniejsza niż data końcowa.")
         return
 
     # Try mapping/checking before running
     try:
         get_file_path(args.quantity, args.freq)
     except argparse.ArgumentTypeError as e:
-        print(f"Błąd argumentu: {e}")
+        logger.warning(f"Błąd argumentu: {e}")
         return
 
     args.func(args)
