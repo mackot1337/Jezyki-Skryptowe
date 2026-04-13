@@ -2,7 +2,7 @@ import csv
 import os
 import logging
 
-logger = logging.getLogger("zad5")
+logger = logging.getLogger("logger")
 
 def parseCsvFile(filePath):
     if not os.path.exists(filePath):
