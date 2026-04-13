@@ -8,5 +8,6 @@ zadanie 16 to get_largest_session.py bo nie podali nazwy w zadaniu
 zadanie 18 nie wiem czy o to chodziło z tymi opcjonalnymi
 
 zadanie 19 uzywa biblioteki do parsowania uri mam nadzieje ze sie nie przyczepi
+zadanie 19 uzywa biblioteki do parsowania uri mam nadzieje ze sie nie przyczepi
 
 zmieniłem readLog żeby status_code(error) był jako 14 tak jak w logach bo inaczej nie mozna było go zczytac z pliku ale krotka zostaje z 10 polami wiec nic sie nie zmienia
