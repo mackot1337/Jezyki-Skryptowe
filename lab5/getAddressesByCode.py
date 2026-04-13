@@ -7,6 +7,7 @@ def getAddressesByCode(path, station_code):
     
     stationsData = parseCsvFile(path)
     
+    # Przetwarzamy adresy, aby oddzielić ulicę od numeru
     pattern = re.compile(r"^(.*?)(?:\s+(\d[^\s]*))?$")
     result = []
     

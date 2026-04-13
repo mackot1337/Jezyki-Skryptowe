@@ -1,19 +1,19 @@
 normal random-station:
-python lab5/ex5.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 random-station
-python lab5/ex7.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 random-station
+python lab5/cli_default.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 random-station
+python lab5/cli_typer.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 random-station
 
 normal specific station:
-python lab5/ex5.py -q PM10 -f 1g -s 2023-01-01 -e 2023-01-05 stats DsCzerStraza
-python lab5/ex7.py -q PM10 -f 1g -s 2023-01-01 -e 2023-01-05 stats DsCzerStraza
+python lab5/cli_default.py -q PM10 -f 1g -s 2023-01-01 -e 2023-01-05 stats DsCzerStraza
+python lab5/cli_typer.py -q PM10 -f 1g -s 2023-01-01 -e 2023-01-05 stats DsCzerStraza
 
 quantity error for specific station:
-python lab5/ex5.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 stats NIEZNANA_STACJA
-python lab5/ex7.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 stats NIEZNANA_STACJA
+python lab5/cli_default.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 stats NIEZNANA_STACJA
+python lab5/cli_typer.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 stats NIEZNANA_STACJA
 
 quantity error:
-python lab5/ex5.py -q NIE_ISTNIEJE -f 24g -s 2023-01-01 -e 2023-01-05 random-station
-python lab5/ex7.py -q NIE_ISTNIEJE -f 24g -s 2023-01-01 -e 2023-01-05 random-station
+python lab5/cli_default.py -q NIE_ISTNIEJE -f 24g -s 2023-01-01 -e 2023-01-05 random-station
+python lab5/cli_typer.py -q NIE_ISTNIEJE -f 24g -s 2023-01-01 -e 2023-01-05 random-station
 
 date error:
-python lab5/ex5.py -q PM10 -f 24g -s 2023-05-05 -e 2023-01-01 random-station
-python lab5/ex7.py -q PM10 -f 24g -s 2023-05-05 -e 2023-01-01 random-station
+python lab5/cli_default.py -q PM10 -f 24g -s 2023-05-05 -e 2023-01-01 random-station
+python lab5/cli_typer.py -q PM10 -f 24g -s 2023-05-05 -e 2023-01-01 random-station
