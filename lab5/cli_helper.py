@@ -120,3 +120,41 @@ def extract_measurements(csv_path, start_date, end_date):
                         pass
                         
     return data_per_station
+
+
+def extract_station_measurements(csv_path, start_date, end_date, station_code):
+    data = parseCsvFile(csv_path)
+    if not data or len(data) < 5:
+        return []
+
+    station_row = data[0]
+    cols = [k for k in station_row.keys() if k != 'Nr']
+    station_codes = [station_row[c] for c in cols]
+
+    target_col = None
+    for i, code in enumerate(station_codes):
+        if code and code.lower() == station_code.lower() and i < len(cols):
+            target_col = cols[i]
+            break
+
+    if target_col is None:
+        return []
+
+    result = []
+    for row in data[5:]:
+        date_str = row.get('Nr')
+        if not date_str:
+            continue
+
+        row_date = parse_date(date_str)
+        if row_date is None:
+            continue
+
+        row_day_start = row_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        if start_date <= row_day_start <= end_date:
+            result.append({
+                'Czas': date_str,
+                'Wartość': row.get(target_col, '').strip()
+            })
+
+    return result

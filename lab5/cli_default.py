@@ -3,8 +3,9 @@ import os
 import random
 import statistics
 
-from cli_helper import setup_logging, get_file_path, extract_measurements, valid_date, valid_measurement
+from cli_helper import setup_logging, get_file_path, extract_measurements, extract_station_measurements, valid_date, valid_measurement
 from getAddressesByCode import getAddressesByCode
+from findAnomaly import findAnomaly
 
 logger = setup_logging()
 
@@ -69,8 +70,33 @@ def cmd_stats(args):
     else:
         print("Odchylenie standardowe: Brak (wymagane min. 2 pomiary)")
 
+
+def cmd_anomaly(args):
+    try:
+        csv_path = get_file_path(args.quantity, args.freq)
+    except argparse.ArgumentTypeError as e:
+        logger.warning(f"Błąd argumentu: {e}")
+        return
+
+    measurements = extract_station_measurements(csv_path, args.start, args.end, args.station)
+    if not measurements:
+        logger.warning(f"Brak danych dla stacji '{args.station}' w zadanym przedziale czasu.")
+        return
+
+    result = findAnomaly(measurements, alarmLimit=args.alarm_limit, jumpLimit=args.jump_limit)
+
+    print(f"Stacja: {args.station}")
+    print(f"Wielkość: {args.quantity}")
+    print(f"Liczba błędów czujnika: {result['bledy_czujnika_ilosc']}")
+    print("Wykryte ostrzeżenia:")
+    if result['wykryte_ostrzezenia']:
+        for item in result['wykryte_ostrzezenia']:
+            print(f"- {item}")
+    else:
+        print("- Brak anomalii")
+
 def create_parser():
-    parser = argparse.ArgumentParser(description="CLI do obróbki danych o jakości powietrza z 2023 r.")
+    parser = argparse.ArgumentParser(description="CLI do obróbki danych o jakości powietrza")
     
     parser.add_argument('--quantity', '-q', required=True, type=valid_measurement, 
                         help="Mierzona wielkość (np. PM10, PM2.5, NO2)")
@@ -91,6 +117,15 @@ def create_parser():
                                          help="Oblicz średnią i odchylenie standardowe dla danej stacji")
     parser_stats.add_argument('station', type=str, help="Kod stacji (np. DsGlogWiStwo)")
     parser_stats.set_defaults(func=cmd_stats)
+
+    parser_anomaly = subparsers.add_parser('anomaly',
+                                           help="Wykryj anomalie pomiarowe dla danej stacji")
+    parser_anomaly.add_argument('station', type=str, help="Kod stacji (np. DsGlogWiStwo)")
+    parser_anomaly.add_argument('--alarm-limit', type=float, default=500.0,
+                                help="Próg alarmowy (domyślnie: 500.0)")
+    parser_anomaly.add_argument('--jump-limit', type=float, default=100.0,
+                                help="Próg nagłego skoku (domyślnie: 100.0)")
+    parser_anomaly.set_defaults(func=cmd_anomaly)
 
     return parser
 

@@ -17,3 +17,11 @@ python lab5/cli_typer.py -q NIE_ISTNIEJE -f 24g -s 2023-01-01 -e 2023-01-05 rand
 date error:
 python lab5/cli_default.py -q PM10 -f 24g -s 2023-05-05 -e 2023-01-01 random-station
 python lab5/cli_typer.py -q PM10 -f 24g -s 2023-05-05 -e 2023-01-01 random-station
+
+anomaly (domyślne progi):
+python lab5/cli_default.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 anomaly DsGlogWiStwo
+python lab5/cli_typer.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 anomaly DsGlogWiStwo
+
+anomaly (niestandardowe progi):
+python lab5/cli_default.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 anomaly DsGlogWiStwo --alarm-limit 1000 --jump-limit 200
+python lab5/cli_typer.py -q PM10 -f 24g -s 2023-01-01 -e 2023-01-05 anomaly DsGlogWiStwo --alarm-limit 1000 --jump-limit 200

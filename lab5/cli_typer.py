@@ -7,8 +7,9 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from cli_helper import setup_logging, get_file_path, extract_measurements
+from cli_helper import setup_logging, get_file_path, extract_measurements, extract_station_measurements
 from getAddressesByCode import getAddressesByCode
+from findAnomaly import findAnomaly
 
 app = typer.Typer(help="CLI do obróbki danych o jakości powietrza (Typer)")
 logger = setup_logging()
@@ -119,6 +120,40 @@ def stats(
     )
         
     console.print(panel)
+
+
+@app.command("anomaly")
+def anomaly(
+    ctx: typer.Context,
+    station: str = typer.Argument(..., help="Kod stacji (np. DsGlogWiStwo)"),
+    alarm_limit: float = typer.Option(500.0, "--alarm-limit", help="Próg alarmowy"),
+    jump_limit: float = typer.Option(100.0, "--jump-limit", help="Próg nagłego skoku")
+):
+    obj = ctx.obj
+    measurements = extract_station_measurements(obj["csv_path"], obj["start"], obj["end"], station)
+
+    if not measurements:
+        console.print(f"[bold yellow]WARNING:[/bold yellow] Brak danych dla stacji '{station}' w zadanym przedziale czasu.")
+        return
+
+    result = findAnomaly(measurements, alarmLimit=alarm_limit, jumpLimit=jump_limit)
+
+    table = Table(header_style="bold magenta", border_style="blue")
+    table.add_column("Parametr", style="bold cyan", justify="right")
+    table.add_column("Wartość", style="white", justify="left")
+    table.add_row("Stacja", station)
+    table.add_row("Wielkość", obj["quantity"])
+    table.add_row("Błędy czujnika", str(result["bledy_czujnika_ilosc"]))
+    table.add_row("Liczba ostrzeżeń", str(len(result["wykryte_ostrzezenia"])))
+
+    console.print(Panel(table, title="[bold green]Wynik analizy anomalii[/bold green]", border_style="purple", expand=False))
+
+    if result["wykryte_ostrzezenia"]:
+        console.print("[bold yellow]Wykryte ostrzeżenia:[/bold yellow]")
+        for item in result["wykryte_ostrzezenia"]:
+            console.print(f"- {item}")
+    else:
+        console.print("[green]Brak anomalii.[/green]")
 
 if __name__ == "__main__":
     app()
