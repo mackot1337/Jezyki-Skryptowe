@@ -18,7 +18,9 @@ class Measurements:
 
         if not os.path.exists(directoryPath):
             raise FileNotFoundError(f"Katalog {directoryPath} nie istnieje.")
-        # dodac sprawdzanie czy jest pusty i czy uzytkownik ma dostep
+        
+        if not os.listdir(directoryPath):
+            raise ValueError(f"Katalog {directoryPath} jest pusty.")
         
         for filename in os.listdir(directoryPath):
             if filename.endswith(".csv"):
@@ -29,7 +31,9 @@ class Measurements:
                 frequency = parts[2] if len(parts) > 2 else None
 
                 try:
-                    #dodac sprawdzanie czy jest pusty wszedzie tam gdzie zczytujemy dane
+                    if os.path.getsize(filepath) == 0:
+                        continue
+                    
                     with open(filepath, "r", encoding="utf-8") as f:
                         reader = csv.reader(f, delimiter=";")
 
