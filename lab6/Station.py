@@ -18,7 +18,7 @@ class Station:
         self.longitude = longitude
 
     def __str__(self):
-        return f"Stacja: {self.name} - Kod stacji: {self.stationCode}"
+        return f"Stacja: {self.name} - Kod stacji: {self.stationCode}AC"
     
     def __repr__(self):
         return f"Station(stationCode='{self.stationCode}', InternationalCode='{self.InternationalCode}', name='{self.name}', oldCode='{self.oldCode}', startDate={self.startDate}, closeDate={self.closeDate}, type='{self.type}', areaType='{self.areaType}', stationType='{self.stationType}', province='{self.province}', city='{self.city}', address='{self.address}', latitude={self.latitude}, longitude={self.longitude})"
@@ -40,3 +40,5 @@ if __name__ == "__main__":
 
     print(station1 == station2)
     print(station1 == station3)
+    print(station1 == "Not a station")
+    print(station1 == None)

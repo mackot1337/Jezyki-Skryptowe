@@ -59,3 +59,14 @@ if __name__ == "__main__":
 
     print(f"Brakujace pomiary: {ts.missingCount}")
     print(f"Kompletnosc: {ts.completeness}")
+
+    badDate = datetime.datetime(1990, 1, 1)
+    try:
+        print(ts[badDate])
+    except KeyError as e:
+        print(e)
+
+    try:
+        print(ts["Not a date"])
+    except TypeError as e:
+        print(e)

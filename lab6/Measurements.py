@@ -102,7 +102,7 @@ class Measurements:
                 for station, index in stationIndices.items():
                     if index < len(row) and row[index].strip():
                         try:
-                            value = float(row[index].replace(",", "."))
+                            value = float(row[index])
                         except ValueError:
                             value = None
                     else:
@@ -290,6 +290,13 @@ Kod stanowiska;Bialka-kod;Krakow-kod
             for strategyName, anomalies in strategyResults.items():
                 print(f" - {strategyName}: {anomalies}")
 #-----------nowe-----------------
+        print("detectAllAnomalies działa poprawnie.\n")
+
+        try:
+            badMeasurements = Measurements("nonExistentDir")
+            print("BŁĄD: Kod nie rzucił FileNotFoundError!")
+        except FileNotFoundError:
+            print("Sukces: Rzucono błąd dla braku katalogu.")
     finally:
         shutil.rmtree(testDir)
         print("Testy zakończone.")
