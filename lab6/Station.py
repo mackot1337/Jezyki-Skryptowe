@@ -8,7 +8,7 @@ class Station:
         self.closeDate = closeDate
 
     def __str__(self):
-        return f"Stacja: {self.name} - Kod stacji: {self.stationCode}"
+        return f"Stacja: {self.name} - Kod stacji: {self.stationCode}AC"
     
     def __repr__(self):
         return f"Station: {self.name} (Station number: {self.stationCode}, Start date: {self.startDate}, Close date: {self.closeDate})"
@@ -30,3 +30,5 @@ if __name__ == "__main__":
 
     print(station1 == station2)
     print(station1 == station3)
+    print(station1 == "Not a station")
+    print(station1 == None)

@@ -95,7 +95,7 @@ class Measurements:
                 for station, index in stationIndices.items():
                     if index < len(row) and row[index].strip():
                         try:
-                            value = float(row[index].replace(",", "."))
+                            value = float(row[index])
                         except ValueError:
                             value = None
                     else:
@@ -218,7 +218,13 @@ Kod stanowiska;Bialka-kod;Krakow-kod
         assert len(resultsNoPreload) == 3, "Niepoprawna liczba serii w wynikach bez preload"
         resultsPreload = measurements.detectAllAnomalies(validators, preload=True)
         assert len(resultsPreload) == 4, "Niepoprawna liczba serii w wynikach z preload"
-        print("detectAllAnomalies działa poprawnie.")
+        print("detectAllAnomalies działa poprawnie.\n")
+
+        try:
+            badMeasurements = Measurements("nonExistentDir")
+            print("BŁĄD: Kod nie rzucił FileNotFoundError!")
+        except FileNotFoundError:
+            print("Sukces: Rzucono błąd dla braku katalogu.")
     finally:
         shutil.rmtree(testDir)
         print("Testy zakończone.")
