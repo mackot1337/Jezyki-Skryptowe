@@ -1,5 +1,5 @@
-from lab6.TimeSeries import TimeSeries
-from lab6.series_validator import SeriesValidator
+from TimeSeries import TimeSeries
+from series_validator import SeriesValidator
 
 
 class ZeroSpikeDetector(SeriesValidator):

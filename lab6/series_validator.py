@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
-from lab6.TimeSeries import TimeSeries
+from TimeSeries import TimeSeries
 
 
 class SeriesValidator(ABC):

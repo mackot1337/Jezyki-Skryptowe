@@ -3,7 +3,12 @@ import csv
 import datetime
 from TimeSeries import TimeSeries
 import shutil
-#IMPORT!!!! VALIDATOR
+
+from outlier_detector import OutlierDetector
+from simple_reporter import SimpleReporter
+from threshold_detector import ThresholdDetector
+from zero_spike_detector import ZeroSpikeDetector
+
 
 class Measurements:
     def __init__(self, directoryPath):
@@ -13,6 +18,7 @@ class Measurements:
 
         if not os.path.exists(directoryPath):
             raise FileNotFoundError(f"Katalog {directoryPath} nie istnieje.")
+        # dodac sprawdzanie czy jest pusty i czy uzytkownik ma dostep
         
         for filename in os.listdir(directoryPath):
             if filename.endswith(".csv"):
@@ -23,6 +29,7 @@ class Measurements:
                 frequency = parts[2] if len(parts) > 2 else None
 
                 try:
+                    #dodac sprawdzanie czy jest pusty wszedzie tam gdzie zczytujemy dane
                     with open(filepath, "r", encoding="utf-8") as f:
                         reader = csv.reader(f, delimiter=";")
 
@@ -151,7 +158,24 @@ class Measurements:
                     results[ts].extend(anomalies)
 
         return results
-    
+#-----------nowe-----------------
+    def runStrategiesOnAllSeries(self, validators):
+        for meta in self.metadata:
+            for station in meta["stations"]:
+                if (meta['path'], station) not in self.loadedSeries:
+                    self.loadDataForStations(meta, [station])
+
+        aggregatedResults = {}
+        for ts in self.loadedSeries.values():
+            seriesKey = f"{ts.name}@{ts.stationCode}"
+            aggregatedResults[seriesKey] = {}
+
+            for validator in validators:
+                strategyName = validator.__class__.__name__
+                aggregatedResults[seriesKey][strategyName] = validator.analyze(ts)
+
+        return aggregatedResults
+    #-----------nowe-----------------
 if __name__ == "__main__":
     print("ROZPOCZYNAM TESTY KLASY MEASUREMENTS")
 
@@ -219,6 +243,53 @@ Kod stanowiska;Bialka-kod;Krakow-kod
         resultsPreload = measurements.detectAllAnomalies(validators, preload=True)
         assert len(resultsPreload) == 4, "Niepoprawna liczba serii w wynikach z preload"
         print("detectAllAnomalies działa poprawnie.")
+
+#-----------nowe-----------------
+        print("\nDemonstracja kaczego typowania:")
+        demoSeries = TimeSeries(
+            name="PM10",
+            stationCode="DsDemo01",
+            averageTime="1g",
+            dates=[
+                datetime.datetime(2023, 10, 1, 0, 0),
+                datetime.datetime(2023, 10, 1, 1, 0),
+                datetime.datetime(2023, 10, 1, 2, 0),
+                datetime.datetime(2023, 10, 1, 3, 0),
+                datetime.datetime(2023, 10, 1, 4, 0),
+                datetime.datetime(2023, 10, 1, 5, 0),
+                datetime.datetime(2023, 10, 1, 6, 0),
+            ],
+            values=[12.0, 0.0, None, 0.0, 0.0, 0.0, 95.0],
+            unit="ug/m3",
+        )
+
+        analyzers = [
+            OutlierDetector(k=1.4),
+            ZeroSpikeDetector(),
+            ThresholdDetector(threshold=80.0),
+            SimpleReporter(),
+        ]
+
+        for analyzer in analyzers:
+            print(f"\n{analyzer.__class__.__name__}:")
+            for info in analyzer.analyze(demoSeries):
+                print(f" - {info}")
+
+        print("\nWniosek: wywołujemy analyze(series) na obiektach różnych klas bez sprawdzania typu.")
+        print("To pokazuje polimorfizm strukturalny (kacze typowanie) w Pythonie.")
+
+        print("\nUruchamianie każdej strategii (SeriesValidator) na każdym szeregu czasowym:")
+        strategies = [
+            OutlierDetector(k=1.4),
+            ZeroSpikeDetector(),
+            ThresholdDetector(threshold=11.0),
+        ]
+        aggregated = measurements.runStrategiesOnAllSeries(strategies)
+        for seriesKey, strategyResults in aggregated.items():
+            print(f"\nSeria: {seriesKey}")
+            for strategyName, anomalies in strategyResults.items():
+                print(f" - {strategyName}: {anomalies}")
+#-----------nowe-----------------
     finally:
         shutil.rmtree(testDir)
         print("Testy zakończone.")
