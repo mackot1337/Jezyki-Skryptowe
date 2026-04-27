@@ -1,98 +1,93 @@
-from __future__ import annotations
-
-import csv
 from pathlib import Path
-from typing import Callable, Iterable
 
 from Measurements import Measurements
+from zero_spike_detector import ZeroSpikeDetector
+from outlier_detector import OutlierDetector
+from threshold_detector import ThresholdDetector
 
 def run_demo():
     base_dir = Path(__file__).resolve().parent
-    measurements_dir = base_dir / "measurements"
-    stations_csv = base_dir / "stacje.csv"
-
-    print("=== LAB6: test klasy Measurements na realnych danych ===")
+    measurements_dir = base_dir / "measurements" 
+    
+    print("=== LAB 6: Test klasy Measurements na realnych danych ===")
     print(f"Katalog pomiarow: {measurements_dir}")
-    print(f"Plik stacji: {stations_csv}")
 
     measurements = Measurements(str(measurements_dir))
-
+    
+    # --- Test 1: __len__ ---
     metadata_count = len(measurements.metadata)
     expected_series_count = sum(len(meta["stations"]) for meta in measurements.metadata)
 
-    print("\n--- 1) __len__ ---")
+    print("\n--- 1) __len__ (Liczba możliwych serii) ---")
     print(f"Liczba plikow rozpoznanych w metadata: {metadata_count}")
-    print(f"oczekiwano={expected_series_count}")
-    print(f"otrzymano={len(measurements)}")
+    print(f"Oczekiwano stacji = {expected_series_count}")
+    print(f"Otrzymano stacji = {len(measurements)}")
+    print(f"Test __len__ zaliczony: {expected_series_count == len(measurements)}")
 
-    print(f"get_by_parameter: {measurements.getByParameter("SO2")}")
-    print(f"get_by_station: {measurements.getByStation("WmPuszczaBor")}")
+    # --- Test 2: __contains__ ---
+    sample_parameter = "SO2"
+    bad_parameter = "zly_parametr"
 
-    # sample_parameter = measurements.metadata[1]["parameter"] if measurements.metadata else None
-    # bogus_parameter = "__NIEISTNIEJACY_WSKAZNIK__"
+    print("\n--- 2) __contains__ (Sprawdzanie obecności wskaźnika) ---")
+    print(f"Czy zbiór zawiera '{sample_parameter}'? {'Tak' if sample_parameter in measurements else 'Nie'} (oczekiwano: Tak)")
+    print(f"Czy zbiór zawiera '{bad_parameter}'? {'Tak' if bad_parameter in measurements else 'Nie'} (oczekiwano: Nie)")
 
-    # print("\n--- 2) __contains__(parameter_name) ---")
-    # print(f"Testowany istniejacy parametr: {sample_parameter}")
-    # print("oczekiwano=True")
-    # print(f"otrzymano={sample_parameter in measurements}")
+    # --- Test 3: getByParameter ---
+    print(f"\n--- 3) getByParameter dla '{sample_parameter}' ---")
+    param_series = measurements.getByParameter(sample_parameter)
+    
+    print(f"Liczba wczytanych serii dla {sample_parameter}: {len(param_series)}")
+    if param_series:
+        first_series = param_series[0]
+        print(f"Sukces! Pierwsza wczytana seria to: Stacja {first_series.stationCode}, Pomiary: {len(first_series.values)}")
+    else:
+        print(f"UWAGA: Nie wczytano żadnych serii. Sprawdź, czy masz plik z {sample_parameter} w folderze.")
 
-    # print(f"Testowany brakujacy parametr: {bogus_parameter}")
-    # print("oczekiwano=False")
-    # print(f"otrzymano={bogus_parameter in measurements}")
+    # --- Test 4: getByStation ---
+    print("\n--- 4) getByStation ---")
+    if measurements.metadata and measurements.metadata[0]["stations"]:
+        sample_station = measurements.metadata[0]["stations"][0]
+        print(f"Test dla stacji: '{sample_station}'")
+        
+        station_series = measurements.getByStation(sample_station)
+        print(f"Liczba wczytanych serii dla stacji {sample_station}: {len(station_series)}")
+        
+        if station_series:
+            print("Wczytane wskaźniki dla tej stacji:")
+            for s in station_series:
+                print(f" - {s.unit} (Pomiarów: {len(s.values)})")
+    else:
+        print("Brak metadanych lub stacji do przetestowania.")
 
-    # print("\n--- 3) get_by_parameter(param_name) / getByParameter(param_name) ---")
-    # loaded_before = len(measurements.loadedSeries)
-    # series_for_parameter = get_by_parameter(sample_parameter)
-    # loaded_after = len(measurements.loadedSeries)
+    #--- Test 5: detectAllAnomalies ---
+    print("\n--- 5) detectAllAnomalies (Roznice leniwego wczytywania) ---")
+    validators = [ZeroSpikeDetector(), ThresholdDetector(threshold=100.0)]
+    
+    # Tworzymy nowy obiekt Measurements, aby pokazac stan od zera
+    measurements_lazy = Measurements(str(measurements_dir))
+    print(f"Poczatkowa liczba wczytanych serii w nowym obiekcie: {len(measurements_lazy.loadedSeries)}")
+    
+    results_no_preload = measurements_lazy.detectAllAnomalies(validators, preload=False)
+    print("Po wykonaniu detectAllAnomalies(preload=False):")
+    print(f" - Liczba wczytanych serii: {len(measurements_lazy.loadedSeries)}")
+    print(f" - Liczba serii przebadanych: {len(results_no_preload)}")
+    
+    results_preload = measurements_lazy.detectAllAnomalies(validators, preload=True)
+    print("\nPo wykonaniu detectAllAnomalies(preload=True):")
+    print(f" - Liczba wczytanych serii (loadedSeries): {len(measurements_lazy.loadedSeries)}")
+    print(f" - Liczba serii przebadanych: {len(results_preload)}")
 
-    # print("oczekiwano=lista serii dla istniejacego parametru")
-    # print(f"otrzymano=typ {type(series_for_parameter).__name__}, liczba_serii {len(series_for_parameter)}")
-    # print("oczekiwano=wzrost loadedSeries po pierwszym dostepie (leniwe ladowanie)")
-    # print(f"otrzymano=loadedSeries przed={loaded_before}, po={loaded_after}")
-
-    # empty_parameter_series = get_by_parameter(bogus_parameter)
-    # print("oczekiwano=pusta lista dla nieistniejacego parametru")
-    # print(f"otrzymano=liczba_serii {len(empty_parameter_series)}")
-
-    # print("\n--- 4) get_by_station(station_code) / getByStation(station_code) ---")
-    # station_rows = _load_station_rows(stations_csv)
-    # stations_from_catalog = {row["Kod stacji"] for row in station_rows if row.get("Kod stacji")}
-
-    # stations_from_measurements = []
-    # for meta in measurements.metadata:
-    #     for station_code in meta["stations"]:
-    #         stations_from_measurements.append(station_code)
-
-    # shared_station_codes = [code for code in stations_from_measurements if code in stations_from_catalog]
-    # sample_station_code = _first_or_none(shared_station_codes) or _first_or_none(stations_from_measurements)
-
-    # if sample_station_code is None:
-    #     print("oczekiwano=co najmniej jedna stacja do testu")
-    #     print("otrzymano=brak stacji - pomijam dalszy test get_by_station")
-    #     return
-
-    # station_series = get_by_station(sample_station_code)
-
-    # print(f"Testowana stacja: {sample_station_code}")
-    # print("oczekiwano=lista serii dla danej stacji")
-    # print(f"otrzymano=typ {type(station_series).__name__}, liczba_serii {len(station_series)}")
-
-    # empty_station_code = "__NIEISTNIEJACA_STACJA__"
-    # empty_station_series = get_by_station(empty_station_code)
-    # print("oczekiwano=pusta lista dla nieistniejacej stacji")
-    # print(f"otrzymano=liczba_serii {len(empty_station_series)}")
-
-    # print("\n--- 5) Krotkie podsumowanie zaladowanych serii ---")
-    # if station_series:
-    #     first_series = station_series[0]
-    #     print(
-    #         "Przyklad TimeSeries: "
-    #         f"name={first_series.name}, station={first_series.stationCode}, "
-    #         f"freq={first_series.averageTime}, probek={len(first_series.values)}"
-    #     )
-
-    # print("\nWYNIK: dane zostaly wczytane i wypisane zgodnie z punktami zadania (oczekiwano/otrzymano).")
-
+    print("\nWypisanie znalezionych anomalii:")
+    anomalies_found = False
+    for ts, anomalies in results_preload.items():
+        if anomalies:
+            anomalies_found = True
+            print(f" -> [{ts.name} @ {ts.stationCode}] Znaleziono {len(anomalies)} anomalie:")
+            for idx, anomaly in enumerate(anomalies, 1):
+                print(f"    {idx}. {anomaly}")
+    
+    if not anomalies_found:
+        print("  Brak anomalii dla zadanych kryteriów w wczytanych danych.")
 
 if __name__ == "__main__":
     run_demo()
