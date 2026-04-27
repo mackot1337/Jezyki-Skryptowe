@@ -1,0 +1,9 @@
+Nr,Kod stacji,Kod międzynarodowy,Nazwa stacji,Stary Kod stacji (o ile inny od aktualnego),Data uruchomienia,Data zamknięcia,Typ stacji,Typ obszaru,Rodzaj stacji,Województwo,Miejscowość,Adres,WGS84 φ N,WGS84 λ E
+90,DsOsieczow21,PL0505A,Osieczów,DsOsieczow,2010-01-01,,tło,pozamiejski,kontenerowa stacjonarna,DOLNOŚLĄSKIE,Osieczów,,51.317630,15.431719
+102,DsSniezkaObs,PL0003R,Śnieżka,DsSniezka,2000-01-01,2023-12-31,tło,pozamiejski,kontenerowa stacjonarna,DOLNOŚLĄSKIE,Karpacz,Śnieżka,50.736389,15.739722
+261,KpZielBoryTu,PL0077A,"Zielonka, Bory Tucholskie",KpZielBoryTuch,2004-05-27,,tło,pozamiejski,kontenerowa stacjonarna,KUJAWSKO-POMORSKIE,Zielonka,Bory Tucholskie,53.662117,17.934017
+279,LbJarczWolaM,PL0002R,"Jarczew, IMGW",LbJarczew,1985-10-01,,tło,pozamiejski,kontenerowa stacjonarna,LUBELSKIE,Jarczew,,51.814367,21.972375
+541,MzGranicaKPN,PL0128A,"Granica, KPN",,2003-08-01,,tło,pozamiejski,kontenerowa stacjonarna,MAZOWIECKIE,Granica,Kampinoski Park Narodowy,52.285858,20.454653
+826,PmLebaRabka1,PL0004R,"Łeba, IMGW","Pm08LEBAiEMEPa, PmLebaRabkaE",2000-01-01,,tło,podmiejski,w budynku,POMORSKIE,Łeba,ul. Rąbka 1a,54.754139,17.534528
+961,SlZlotPotLes,PL0243A,"Złoty Potok, Leśniczówka",SlZlotyJano_lesni,2005-01-01,,tło,pozamiejski,kontenerowa stacjonarna,ŚLĄSKIE,Złoty Potok,Leśniczówka Kamienna Góra,50.710889,19.458797
+999,WmPuszczaBor,PL0005R,"Diabla Góra, Puszcza Borecka",WmPuszcz_IOS_Borecka,1994-01-01,,tło,pozamiejski,rozproszona,WARMIŃSKO-MAZURSKIE,Diabla Góra,Diabla Góra,54.124819,22.038056

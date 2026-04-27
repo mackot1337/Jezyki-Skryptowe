@@ -18,7 +18,9 @@ class Measurements:
 
         if not os.path.exists(directoryPath):
             raise FileNotFoundError(f"Katalog {directoryPath} nie istnieje.")
-        # dodac sprawdzanie czy jest pusty i czy uzytkownik ma dostep
+        
+        if not os.listdir(directoryPath):
+            raise ValueError(f"Katalog {directoryPath} jest pusty.")
         
         for filename in os.listdir(directoryPath):
             if filename.endswith(".csv"):
@@ -29,9 +31,11 @@ class Measurements:
                 frequency = parts[2] if len(parts) > 2 else None
 
                 try:
-                    #dodac sprawdzanie czy jest pusty wszedzie tam gdzie zczytujemy dane
+                    if os.path.getsize(filepath) == 0:
+                        continue
+                    
                     with open(filepath, "r", encoding="utf-8") as f:
-                        reader = csv.reader(f, delimiter=";")
+                        reader = csv.reader(f, delimiter=",")
 
                         rowNumbers = next(reader)      
                         rowStations = next(reader)     
@@ -52,7 +56,7 @@ class Measurements:
                                 "frequency": rowFrequency[1].strip() if len(rowFrequency) > 1 else frequency,
                                 "stations": stations
                             })
-                except Exception: 
+                except Exception:
                     pass
 
     def __len__(self):
@@ -71,7 +75,7 @@ class Measurements:
         stationsToLoad = targetStations if targetStations else meta["stations"]
 
         with open(meta["path"], "r", encoding="utf-8") as f:
-            reader = csv.reader(f, delimiter=";")
+            reader = csv.reader(f, delimiter=",")
             next(reader)
 
             headers = next(reader)
@@ -182,23 +186,23 @@ if __name__ == "__main__":
     testDir = "testDir"
     os.makedirs(testDir, exist_ok=True)
 
-    csvContent1 = """Nr;1;2
-Kod stacji;DsBialka;DsBielGrot
-Wskaźnik;PM10;PM10
-Czas uśredniania;1g;1g
-Jednostka;ug/m3;ug/m3
-Kod stanowiska;Bialka-kod;BielGrot-kod
-10/01/23 00:00;10.5;15.0
-10/01/23 01:00;12.0;"""
+    csvContent1 = """Nr,1,2
+Kod stacji,DsBialka,DsBielGrot
+Wskaźnik,PM10,PM10
+Czas uśredniania,1g,1g
+Jednostka,ug/m3,ug/m3
+Kod stanowiska,Bialka-kod,BielGrot-kod
+10/01/23 00:00,10.5,15.0
+10/01/23 01:00,12.0,,"""
 
-    csvContent2 = """Nr;1;2
-Kod stacji;DsBialka;MzKrakow
-Wskaźnik;toluen;toluen
-Czas uśredniania;24g;24g
-Jednostka;ug/m3;ug/m3
-Kod stanowiska;Bialka-kod;Krakow-kod
-10/01/23 00:00;1.2;3.4
-10/01/23 01:00;;5.5"""
+    csvContent2 = """Nr,1,2
+Kod stacji,DsBialka,MzKrakow
+Wskaźnik,toluen,toluen
+Czas uśredniania,24g,24g
+Jednostka,ug/m3,ug/m3
+Kod stanowiska,Bialka-kod,Krakow-kod
+10/01/23 00:00,1.2,3.4
+10/01/23 01:00,,5.5"""
 
     with open(os.path.join(testDir, "2023_PM10_1g.csv"), "w", encoding="utf-8") as f:
         f.write(csvContent1)
