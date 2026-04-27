@@ -56,7 +56,7 @@ class Measurements:
                                 "frequency": rowFrequency[1].strip() if len(rowFrequency) > 1 else frequency,
                                 "stations": stations
                             })
-                except Exception: 
+                except Exception:
                     pass
 
     def __len__(self):
@@ -80,7 +80,7 @@ class Measurements:
 
             headers = next(reader)
 
-            for i in range(4):
+            for _ in range(4):
                 next(reader)
 
             stationIndices = {}
@@ -162,7 +162,7 @@ class Measurements:
                     results[ts].extend(anomalies)
 
         return results
-#-----------nowe-----------------
+
     def runStrategiesOnAllSeries(self, validators):
         for meta in self.metadata:
             for station in meta["stations"]:
@@ -179,7 +179,7 @@ class Measurements:
                 aggregatedResults[seriesKey][strategyName] = validator.analyze(ts)
 
         return aggregatedResults
-    #-----------nowe-----------------
+    
 if __name__ == "__main__":
     print("ROZPOCZYNAM TESTY KLASY MEASUREMENTS")
 
@@ -248,7 +248,6 @@ Kod stanowiska;Bialka-kod;Krakow-kod
         assert len(resultsPreload) == 4, "Niepoprawna liczba serii w wynikach z preload"
         print("detectAllAnomalies działa poprawnie.")
 
-#-----------nowe-----------------
         print("\nDemonstracja kaczego typowania:")
         demoSeries = TimeSeries(
             name="PM10",
@@ -293,8 +292,6 @@ Kod stanowiska;Bialka-kod;Krakow-kod
             print(f"\nSeria: {seriesKey}")
             for strategyName, anomalies in strategyResults.items():
                 print(f" - {strategyName}: {anomalies}")
-#-----------nowe-----------------
-        print("detectAllAnomalies działa poprawnie.\n")
 
         try:
             badMeasurements = Measurements("nonExistentDir")
