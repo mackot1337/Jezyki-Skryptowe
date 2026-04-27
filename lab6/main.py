@@ -7,7 +7,7 @@ from threshold_detector import ThresholdDetector
 
 def run_demo():
     base_dir = Path(__file__).resolve().parent
-    measurements_dir = base_dir / "measurements" 
+    measurements_dir = base_dir / "measurements"
     
     print("=== LAB 6: Test klasy Measurements na realnych danych ===")
     print(f"Katalog pomiarow: {measurements_dir}")
@@ -82,7 +82,7 @@ def run_demo():
     for ts, anomalies in results_preload.items():
         if anomalies:
             anomalies_found = True
-            print(f" -> [{ts.name} @ {ts.stationCode}] Znaleziono {len(anomalies)} anomalie:")
+            print(f" -> [{ts.name}@{ts.stationCode}] Znaleziono {len(anomalies)} anomalie:")
             for idx, anomaly in enumerate(anomalies, 1):
                 print(f"    {idx}. {anomaly}")
     
