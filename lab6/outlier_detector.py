@@ -9,6 +9,11 @@ class OutlierDetector(SeriesValidator):
         self.k = k
 
     def analyze(self, series: TimeSeries) -> list[str]:
+
+        valid_values = [v for v in series.values if v is not None]
+        if not valid_values:
+            return []
+
         mean = np.nanmean([v for v in series.values if v is not None])
         std = np.nanstd([v for v in series.values if v is not None])
         
