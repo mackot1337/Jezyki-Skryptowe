@@ -35,7 +35,7 @@ class Measurements:
                         continue
                     
                     with open(filepath, "r", encoding="utf-8") as f:
-                        reader = csv.reader(f, delimiter=";")
+                        reader = csv.reader(f, delimiter=",")
 
                         rowNumbers = next(reader)      
                         rowStations = next(reader)     
@@ -75,7 +75,7 @@ class Measurements:
         stationsToLoad = targetStations if targetStations else meta["stations"]
 
         with open(meta["path"], "r", encoding="utf-8") as f:
-            reader = csv.reader(f, delimiter=";")
+            reader = csv.reader(f, delimiter=",")
             next(reader)
 
             headers = next(reader)
@@ -180,29 +180,48 @@ class Measurements:
 
         return aggregatedResults
     
+
+    def runStrategiesOnAllSeries(self, validators):
+        for meta in self.metadata:
+            for station in meta["stations"]:
+                if (meta['path'], station) not in self.loadedSeries:
+                    self.loadDataForStations(meta, [station])
+
+        aggregatedResults = {}
+        for ts in self.loadedSeries.values():
+            seriesKey = f"{ts.name}@{ts.stationCode}"
+            aggregatedResults[seriesKey] = {}
+
+            for validator in validators:
+                strategyName = validator.__class__.__name__
+                aggregatedResults[seriesKey][strategyName] = validator.analyze(ts)
+
+        return aggregatedResults
+
+
 if __name__ == "__main__":
     print("ROZPOCZYNAM TESTY KLASY MEASUREMENTS")
 
     testDir = "testDir"
     os.makedirs(testDir, exist_ok=True)
 
-    csvContent1 = """Nr;1;2
-Kod stacji;DsBialka;DsBielGrot
-Wskaźnik;PM10;PM10
-Czas uśredniania;1g;1g
-Jednostka;ug/m3;ug/m3
-Kod stanowiska;Bialka-kod;BielGrot-kod
-10/01/23 00:00;10.5;15.0
-10/01/23 01:00;12.0;"""
+    csvContent1 = """Nr,1,2
+Kod stacji,DsBialka,DsBielGrot
+Wskaźnik,PM10,PM10
+Czas uśredniania,1g,1g
+Jednostka,ug/m3,ug/m3
+Kod stanowiska,Bialka-kod,BielGrot-kod
+10/01/23 00:00,10.5,15.0
+10/01/23 01:00,12.0,,"""
 
-    csvContent2 = """Nr;1;2
-Kod stacji;DsBialka;MzKrakow
-Wskaźnik;toluen;toluen
-Czas uśredniania;24g;24g
-Jednostka;ug/m3;ug/m3
-Kod stanowiska;Bialka-kod;Krakow-kod
-10/01/23 00:00;1.2;3.4
-10/01/23 01:00;;5.5"""
+    csvContent2 = """Nr,1,2
+Kod stacji,DsBialka,MzKrakow
+Wskaźnik,toluen,toluen
+Czas uśredniania,24g,24g
+Jednostka,ug/m3,ug/m3
+Kod stanowiska,Bialka-kod,Krakow-kod
+10/01/23 00:00,1.2,3.4
+10/01/23 01:00,,5.5"""
 
     with open(os.path.join(testDir, "2023_PM10_1g.csv"), "w", encoding="utf-8") as f:
         f.write(csvContent1)
@@ -234,21 +253,43 @@ Kod stanowiska;Bialka-kod;Krakow-kod
         assert len(emptySeries) == 0, "Nie powinno być serii dla nieistniejącej stacji"
         print("getByStation działa poprawnie.")
 
-        print("\nTestowanie detectAllAnomalies:")
-        class MockValidator:
-            def analyze(self, series):
-                if series.missingCount > 0:
-                    return [f"Znaleziono {series.missingCount} brakujących pomiarów w {series.name}"]
-                return []
-            
-        validators = [MockValidator()]
+        try:
+            badMeasurements = Measurements("nonExistentDir")
+            print("BŁĄD: Kod nie rzucił FileNotFoundError!")
+        except FileNotFoundError:
+            print("Sukces: Rzucono błąd dla braku katalogu.")
+
+        print("\n------------ZADANIE 6------------")
+        print("Testowanie detectAllAnomalies:")
+        validators = [
+            OutlierDetector(k=1.4),
+            ZeroSpikeDetector(),
+            ThresholdDetector(threshold=80.0),
+            SimpleReporter(),
+        ]
         resultsNoPreload = measurements.detectAllAnomalies(validators, preload=False)
         assert len(resultsNoPreload) == 3, "Niepoprawna liczba serii w wynikach bez preload"
         resultsPreload = measurements.detectAllAnomalies(validators, preload=True)
         assert len(resultsPreload) == 4, "Niepoprawna liczba serii w wynikach z preload"
         print("detectAllAnomalies działa poprawnie.")
 
-        print("\nDemonstracja kaczego typowania:")
+
+        print("\n------------ZADANIE 7------------")
+        print("Uruchamianie każdej strategii (SeriesValidator) na każdym szeregu czasowym:")
+        strategies = [
+            OutlierDetector(k=1.4),
+            ZeroSpikeDetector(),
+            ThresholdDetector(threshold=10.0),
+        ]
+        aggregated = measurements.runStrategiesOnAllSeries(strategies)
+        for seriesKey, strategyResults in aggregated.items():
+            print(f"\nSeria: {seriesKey}")
+            for strategyName, anomalies in strategyResults.items():
+                print(f" - {strategyName}: {anomalies}")
+
+
+        print("\n---------ZADANIE 8----------")
+        print("Demonstracja kaczego typowania:")
         demoSeries = TimeSeries(
             name="PM10",
             stationCode="DsDemo01",
@@ -262,42 +303,23 @@ Kod stanowiska;Bialka-kod;Krakow-kod
                 datetime.datetime(2023, 10, 1, 5, 0),
                 datetime.datetime(2023, 10, 1, 6, 0),
             ],
-            values=[12.0, 0.0, None, 0.0, 0.0, 0.0, 95.0],
+            values=[25.0, 0.0, None, 0.0, 0.0, 0.0, 95.0],
             unit="ug/m3",
         )
 
-        analyzers = [
+        analizators = [
             OutlierDetector(k=1.4),
             ZeroSpikeDetector(),
             ThresholdDetector(threshold=80.0),
             SimpleReporter(),
         ]
 
-        for analyzer in analyzers:
-            print(f"\n{analyzer.__class__.__name__}:")
-            for info in analyzer.analyze(demoSeries):
+        for analizator in analizators:
+            print(f"\n{analizator.__class__.__name__}:")
+            for info in analizator.analyze(demoSeries):
                 print(f" - {info}")
 
-        print("\nWniosek: wywołujemy analyze(series) na obiektach różnych klas bez sprawdzania typu.")
-        print("To pokazuje polimorfizm strukturalny (kacze typowanie) w Pythonie.")
 
-        print("\nUruchamianie każdej strategii (SeriesValidator) na każdym szeregu czasowym:")
-        strategies = [
-            OutlierDetector(k=1.4),
-            ZeroSpikeDetector(),
-            ThresholdDetector(threshold=11.0),
-        ]
-        aggregated = measurements.runStrategiesOnAllSeries(strategies)
-        for seriesKey, strategyResults in aggregated.items():
-            print(f"\nSeria: {seriesKey}")
-            for strategyName, anomalies in strategyResults.items():
-                print(f" - {strategyName}: {anomalies}")
-
-        try:
-            badMeasurements = Measurements("nonExistentDir")
-            print("BŁĄD: Kod nie rzucił FileNotFoundError!")
-        except FileNotFoundError:
-            print("Sukces: Rzucono błąd dla braku katalogu.")
     finally:
         shutil.rmtree(testDir)
         print("Testy zakończone.")
