@@ -18,7 +18,7 @@ class Station:
         self.longitude = longitude
 
     def __str__(self):
-        return f"Stacja: {self.name} - Kod stacji: {self.stationCode}AC"
+        return f"Stacja: {self.name} - Kod stacji: {self.stationCode}"
     
     def __repr__(self):
         return f"Station(stationCode='{self.stationCode}', InternationalCode='{self.InternationalCode}', name='{self.name}', oldCode='{self.oldCode}', startDate={self.startDate}, closeDate={self.closeDate}, type='{self.type}', areaType='{self.areaType}', stationType='{self.stationType}', province='{self.province}', city='{self.city}', address='{self.address}', latitude={self.latitude}, longitude={self.longitude})"

@@ -179,25 +179,6 @@ class Measurements:
                 aggregatedResults[seriesKey][strategyName] = validator.analyze(ts)
 
         return aggregatedResults
-    
-
-    def runStrategiesOnAllSeries(self, validators):
-        for meta in self.metadata:
-            for station in meta["stations"]:
-                if (meta['path'], station) not in self.loadedSeries:
-                    self.loadDataForStations(meta, [station])
-
-        aggregatedResults = {}
-        for ts in self.loadedSeries.values():
-            seriesKey = f"{ts.name}@{ts.stationCode}"
-            aggregatedResults[seriesKey] = {}
-
-            for validator in validators:
-                strategyName = validator.__class__.__name__
-                aggregatedResults[seriesKey][strategyName] = validator.analyze(ts)
-
-        return aggregatedResults
-
 
 if __name__ == "__main__":
     print("ROZPOCZYNAM TESTY KLASY MEASUREMENTS")
