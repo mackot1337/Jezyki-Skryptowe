@@ -3,35 +3,25 @@ import string
 
 class PasswordGenerator:
     def __init__(self, length, charset=string.ascii_letters + string.digits, count=0):
-        """
-        Inicjalizacja iteratora:
-        - length: długość pojedynczego hasła
-        - charset: zestaw znaków (domyślnie litery i cyfry)
-        - count: maksymalna liczba haseł do wygenerowania
-        """
         self.length = length
         self.charset = charset
         self.count = count
-        self.current_index = 0  # Licznik wygenerowanych haseł
+        self.current_index = 0
 
     def __iter__(self):
-        """Metoda zwracająca iterator (zgodnie z protokołem)"""
+        """Metoda zwracająca iterator"""
         return self
 
     def __next__(self):
         """Metoda zwracająca kolejne hasło lub StopIteration"""
-        # Sprawdzenie, czy nie przekroczono limitu haseł
+
         if self.current_index >= self.count:
             raise StopIteration
         
-        # Generowanie losowego hasła o zadanej długości
         password = "".join(random.choices(self.charset, k=self.length))
         
-        # Zwiększenie licznika i zwrot hasła
         self.current_index += 1
         return password
-
-# --- Testowanie iteratora (if main) ---
 
 if __name__ == "__main__":
     print("--- Testy Zadania 3 ---")
@@ -39,19 +29,35 @@ if __name__ == "__main__":
     # 1. Test z jawnym wywołaniem funkcji next()
     print("Test next():")
     pg1 = PasswordGenerator(length=8, count=2)
-    print(f"Hasło 1: {next(pg1)}")
-    print(f"Hasło 2: {next(pg1)}")
-    # Kolejne wywołanie next(pg1) rzuciłoby StopIteration
+    pwd1 = next(pg1)
+    assert len(pwd1) == 8
+    print(f"Hasło 1: {pwd1}")
+    pwd2 = next(pg1)
+    assert len(pwd2) == 8
+    print(f"Hasło 2: {pwd2}")
     
-    print("\nTest pętli for (3 hasła po 5 znaków):")
+    try:
+        next(pg1)
+        assert False, "Powinno rzucić StopIteration"
+    except StopIteration:
+        pass
+    print("Test 3a zakończony pomyślnie\n")
+    
+    print("Test pętli for (3 hasła po 10 znaków):")
     # 2. Test w pętli for
-    pg2 = PasswordGenerator(length=5, count=3)
+    pg2 = PasswordGenerator(length=10, count=3)
+    generated_count = 0
     for pwd in pg2:
+        assert len(pwd) == 10
+        generated_count += 1
         print(f"Wygenerowane: {pwd}")
+    assert generated_count == 3
+    print("Test 3b zakończony pomyślnie\n")
         
-    print("\nTest skrajny (count=0):")
+    print("Test skrajny (count=0):")
     pg3 = PasswordGenerator(length=10, count=0)
-    # Pętla nie powinna wykonać się ani razu
     for pwd in pg3:
+        assert False, "Nie powinno wygenerować żadnego hasła"
         print("To się nie wyświetli")
     print("Koniec testu skrajnego.")
+    print("Test 3c zakończony pomyślnie\n")
