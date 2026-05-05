@@ -27,9 +27,10 @@ def readLog(stream):
             host = fields[8]
             uri = fields[9]
 
+            size = int(fields[13]) if fields[13].isdigit() else 0
             statusCode = int(fields[14]) if fields[14].isdigit() else None
 
-            tup = (ts, uid, idOrigH, idOrigP, idRespH, idRespP, method, host, uri, statusCode)
+            tup = (ts, uid, idOrigH, idOrigP, idRespH, idRespP, method, host, uri, statusCode, size)
 
             logs.append(tup)
         except (ValueError, TypeError):
