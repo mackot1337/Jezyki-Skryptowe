@@ -2,15 +2,8 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from datetime import datetime
 
-try:
-    from readLogLab3 import readLog
-    from getEntriesInTimeRangeLab3 import getEntriesInTimeRange
-except ImportError as e:
-    print(f"Błąd importu: {e}")
-    
-    def readLog(stream): return []
-    def getEntriesInTimeRange(logs, start, end): return logs
-
+from readLogLab3 import readLog
+from getEntriesInTimeRangeLab3 import getEntriesInTimeRange
 
 class LogBrowserApp:
     def __init__(self, root):
